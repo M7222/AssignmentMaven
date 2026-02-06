@@ -7,8 +7,13 @@ import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
 
+import org.example.healthcare.repository.CrudRepository;
+import java.util.List;
+
+
 @Repository
-public class HospitalDAO {
+public class HospitalDAO implements CrudRepository<Hospital, Integer> {
+
 
     private final DataSource dataSource;
 
@@ -38,8 +43,8 @@ public class HospitalDAO {
         }
     }
 
-    public ArrayList<Hospital> getAll() {
-        ArrayList<Hospital> hospitals = new ArrayList<>();
+    public ArrayList<Hospital> findAllInternal(){
+    ArrayList<Hospital> hospitals = new ArrayList<>();
         String sql = "SELECT * FROM hospital";
 
         try (Connection conn = dataSource.getConnection();
@@ -101,4 +106,59 @@ public class HospitalDAO {
             e.printStackTrace();
         }
     }
+
+    @Override
+    public Hospital create(Hospital entity) {
+        save(entity);
+        return entity;
+    }
+
+    @Override
+    public Hospital getById(Integer id) {
+        String sql = "SELECT * FROM hospital WHERE id = ?";
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, id);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                String raw = rs.getString("departments");
+                String[] depts = (raw != null && !raw.isEmpty())
+                        ? raw.split(", ")
+                        : new String[0];
+
+                return new Hospital(
+                        rs.getInt("id"),
+                        rs.getString("address"),
+                        rs.getString("head_doctor"),
+                        depts,
+                        rs.getString("name")
+                );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+    @Override
+    public List<Hospital> getAll() {
+        return new ArrayList<>(findAllInternal());
+    }
+
+    @Override
+    public Hospital update(Integer id, Hospital entity) {
+        entity.setId(id);
+        update(entity);
+        return entity;
+    }
+
+    @Override
+    public boolean delete(Integer id) {
+        delete(id.intValue());
+        return true;
+    }
+
 }

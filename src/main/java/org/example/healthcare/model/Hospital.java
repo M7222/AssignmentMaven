@@ -53,4 +53,47 @@ public class Hospital {
         result = 31 * result + Arrays.hashCode(departments);
         return result;
     }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+
+    public static class Builder {
+        private int id;
+        private String address;
+        private String headDoctor;
+        private String[] departments;
+        private String name;
+
+        public Builder id(int id) {
+            this.id = id;
+            return this;
+        }
+
+        public Builder address(String address) {
+            this.address = address;
+            return this;
+        }
+
+        public Builder headDoctor(String headDoctor) {
+            this.headDoctor = headDoctor;
+            return this;
+        }
+
+        public Builder departments(String[] departments) {
+            this.departments = departments;
+            return this;
+        }
+
+        public Builder name(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Hospital build() {
+            return new Hospital(id, address, headDoctor, departments, name);
+        }
+    }
+
 }

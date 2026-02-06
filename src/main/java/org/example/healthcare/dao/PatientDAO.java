@@ -7,8 +7,12 @@ import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
 
+import org.example.healthcare.repository.CrudRepository;
+import java.util.List;
+
+
 @Repository
-public class PatientDAO {
+public class PatientDAO implements CrudRepository<Patient, Integer> {
 
     private final DataSource dataSource;
 
@@ -33,7 +37,7 @@ public class PatientDAO {
         }
     }
 
-    public ArrayList<Patient> getAll() {
+    public ArrayList<Patient> findAllInternal() {
         ArrayList<Patient> patients = new ArrayList<>();
         String sql = "SELECT * FROM patient";
 
@@ -84,4 +88,54 @@ public class PatientDAO {
             e.printStackTrace();
         }
     }
+
+    @Override
+    public Patient create(Patient entity) {
+        save(entity);
+        return entity;
+    }
+
+    @Override
+    public Patient getById(Integer id) {
+        String sql = "SELECT * FROM patient WHERE id = ?";
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, id);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                return new Patient(
+                        rs.getInt("id"),
+                        rs.getString("name"),
+                        rs.getString("surname"),
+                        rs.getInt("age")
+                );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public List<Patient> getAll() {
+        return new ArrayList<>(findAllInternal());
+    }
+
+
+    @Override
+    public Patient update(Integer id, Patient entity) {
+        entity.setId(id);
+        update(entity);
+        return entity;
+    }
+
+    @Override
+    public boolean delete(Integer id) {
+        delete(id.intValue());
+        return true;
+    }
+
+
 }

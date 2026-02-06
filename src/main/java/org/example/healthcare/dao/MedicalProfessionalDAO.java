@@ -7,8 +7,13 @@ import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
 
+import org.example.healthcare.repository.CrudRepository;
+import java.util.List;
+
+
 @Repository
-public class MedicalProfessionalDAO {
+public class MedicalProfessionalDAO implements CrudRepository<MedicalProfessional, Integer> {
+
 
     private final DataSource dataSource;
 
@@ -33,7 +38,8 @@ public class MedicalProfessionalDAO {
         }
     }
 
-    public ArrayList<MedicalProfessional> getAll() {
+    public ArrayList<MedicalProfessional> findAllInternal() {
+
         ArrayList<MedicalProfessional> doctors = new ArrayList<>();
         String sql = "SELECT * FROM medical_professional";
 
@@ -84,4 +90,54 @@ public class MedicalProfessionalDAO {
             e.printStackTrace();
         }
     }
+
+    @Override
+    public MedicalProfessional create(MedicalProfessional entity) {
+        save(entity);
+        return entity;
+    }
+
+    @Override
+    public MedicalProfessional getById(Integer id) {
+        String sql = "SELECT * FROM medical_professional WHERE id = ?";
+        try (Connection conn = dataSource.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, id);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                return new MedicalProfessional(
+                        rs.getInt("id"),
+                        rs.getString("name"),
+                        rs.getInt("age"),
+                        rs.getString("specialization")
+                );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+    @Override
+    public List<MedicalProfessional> getAll() {
+        return new ArrayList<>(findAllInternal());
+    }
+
+
+    @Override
+    public MedicalProfessional update(Integer id, MedicalProfessional entity) {
+        entity.setId(id);
+        update(entity);
+        return entity;
+    }
+
+    @Override
+    public boolean delete(Integer id) {
+        delete(id.intValue());
+        return true;
+    }
+
 }
