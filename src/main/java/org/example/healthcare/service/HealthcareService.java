@@ -113,17 +113,14 @@ public class HealthcareService {
     }
 
     public void deletePatient(int id) {
-        if (id <= 0) {
-            throw new ValidationException("Patient id must be > 0");
-        }
+        if (id <= 0) throw new ValidationException("Patient id must be > 0");
 
-        Patient existing = patientRepository.getById(id);
-        if (existing == null) {
+        boolean deleted = patientRepository.delete(id);
+        if (!deleted) {
             throw new NotFoundException("Patient with id=" + id + " not found");
         }
-
-        patientRepository.delete(id);
     }
+
 
     public ArrayList<Patient> getPatientsSortedByAge() {
         return patientRepository.getAll().stream()

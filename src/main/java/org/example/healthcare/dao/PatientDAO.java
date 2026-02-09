@@ -76,18 +76,23 @@ public class PatientDAO implements CrudRepository<Patient, Integer> {
         }
     }
 
-    public void delete(int id) {
+    public boolean delete(int id) {
         String sql = "DELETE FROM patient WHERE id = ?";
-
         try (Connection conn = dataSource.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, id);
-            pstmt.executeUpdate();
+            int rows = pstmt.executeUpdate();
+            System.out.println("DELETE patient id=" + id + " rows=" + rows);
+            return rows > 0;
+
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("DB delete patient failed: " + e.getMessage(), e);
         }
     }
+
+
+
 
     @Override
     public Patient create(Patient entity) {
@@ -133,9 +138,9 @@ public class PatientDAO implements CrudRepository<Patient, Integer> {
 
     @Override
     public boolean delete(Integer id) {
-        delete(id.intValue());
-        return true;
+        return delete(id.intValue());
     }
+
 
 
 }
