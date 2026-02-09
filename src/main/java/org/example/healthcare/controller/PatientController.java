@@ -40,10 +40,9 @@ public class PatientController {
     }
 
 
-    // DELETE /patients/{id}
     @DeleteMapping("/{id}")
     public void deletePatient(@PathVariable int id) {
-
+        healthcareService.deletePatient(id);
     }
 
     @GetMapping("/{id}")
