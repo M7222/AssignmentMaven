@@ -21,19 +21,16 @@ public class PatientController {
     }
 
 
-    // GET /patients
     @GetMapping
     public List<Patient> getAllPatients() {
         return healthcareService.getPatients();
     }
 
-    // POST /patients
     @PostMapping
     public void addPatient(@RequestBody Patient patient) {
         healthcareService.addPatient(patient);
     }
 
-    // PUT /patients/{id}
     @PutMapping("/{id}")
     public void updatePatient(@PathVariable int id, @RequestBody Patient patient) {
         patient.setId(id);

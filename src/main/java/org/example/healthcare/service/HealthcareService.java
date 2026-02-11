@@ -39,7 +39,6 @@ public class HealthcareService {
 
 
 
-    // -------- PATIENTS --------
 
     public void addPatient(Patient p) {
 
@@ -139,7 +138,6 @@ public class HealthcareService {
 
 
 
-    // -------- DOCTORS --------
 
     public void addDoctor(MedicalProfessional m) {
         doctorRepository.create(m);
@@ -160,7 +158,6 @@ public class HealthcareService {
     }
 
 
-    // -------- HOSPITALS --------
 
     public void addHospital(Hospital h) {
         hospitalRepository.create(h);

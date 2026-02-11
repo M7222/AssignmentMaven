@@ -15,7 +15,6 @@ public class EntityFactory {
     }
 
     public static Hospital createHospital(int id, String address, String headDoctor, String[] departments, String name) {
-        // Используем Builder (связали 2 паттерна в одном проектном флоу)
         return Hospital.builder()
                 .id(id)
                 .address(address)
